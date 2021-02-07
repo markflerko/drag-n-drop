@@ -1,24 +1,32 @@
-import React from "react";
-import logo from "./logo.svg";
+import React, { useState } from "react";
+import { Provider } from "react-redux";
 import "./App.css";
+import { CanvasContainer } from "./components/CanvasContainer";
+import { FiguresContainer } from "./components/FiguresContainer";
+import store from "./redux/reduxStore";
 
 function App() {
+  const [ev, setEv] = useState({x: 0, y: 0});
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    setEv({x: event.clientX, y: event.clientY})
+  }
+
   return (
-    <div className="App">
-      <div id="grid">
-        <div className="figures">figures</div>
-        <div className="canvas" id="canvas">
-          canvas
-        </div>
-        <div className="figuresContainer" id="container">
-          <div className="hero circle draggable"></div>
-          <div className="hero square draggable"></div>
-        </div>
-        <div className="canvasContainer" id="canvasContainer">
-          <button id="delete">delete</button>
+    <Provider store={store}>
+      <div className="App" onMouseDown={handleMouseDown}>
+        <div id="grid">
+          <div className="figures">figures</div>
+          <div className="canvas" id="canvas">
+            canvas <br />
+            {`event.clientX => ${ev.x}`} <br />
+            {`event.clientY => ${ev.y}`}
+          </div>
+          <FiguresContainer />
+          <CanvasContainer />
         </div>
       </div>
-    </div>
+    </Provider>
   );
 }
 

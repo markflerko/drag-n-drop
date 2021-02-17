@@ -6,6 +6,6 @@ type PropsType = {};
 export const Square: React.FC<PropsType> = (props) => {
 
   return (
-    <div className="hero square draggable"></div>
+    <div className="hero square draggable"  draggable="true"></div>
   );
 };

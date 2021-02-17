@@ -7,8 +7,9 @@ type PropsType = {};
 
 export const CanvasContainer: React.FC<PropsType> = (props) => {
   return (
-    <div className="canvasContainer" id="canvasContainer">
-      <button id="delete">delete</button>
-    </div>
+    <canvas
+      className="canvasContainer"
+      id="canvasContainer"
+    ></canvas>
   );
 };

@@ -1,11 +1,15 @@
-import { Action, combineReducers, compose, createStore } from 'redux';
-import figuresContainerReducer from './profileReducer';
+import { combineReducers, compose, createStore } from "redux";
+import { appReducer } from "./appReducer";
 
 let reducers = combineReducers({
-  figuresContainer: figuresContainerReducer,
+  app: appReducer,
 });
 
-export type InferActionsTypes<T> = T extends {[key: string]: (...args: any[]) => infer U } ? U : never;
+export type InferActionsTypes<T> = T extends {
+  [key: string]: (...args: any[]) => infer U;
+}
+  ? U
+  : never;
 
 type RootReducerType = typeof reducers;
 export type AppStateType = ReturnType<RootReducerType>;

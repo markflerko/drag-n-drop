@@ -1,12 +1,14 @@
+import { CoordsTypes } from './../types';
 import { InferActionsTypes } from "./reduxStore";
 
 let initialState = {
   isDragging: false,
+  coords: null as CoordsTypes | null
 };
 
 export type initialStateType = typeof initialState;
 
-const figuresContainerReducer = (
+export const appReducer = (
   state = initialState,
   action: ActionsType
 ): initialStateType => {
@@ -15,6 +17,13 @@ const figuresContainerReducer = (
       return {
         ...state,
         isDragging: action.isDraggingStart,
+      };
+    }
+
+    case "MOUSE_MOVE": {
+      return {
+        ...state,
+        coords: action.coords
       };
     }
 
@@ -29,8 +38,11 @@ export const actions = {
       type: "DRAGGING",
       isDraggingStart,
     } as const),
+  onMouseMoveActionCreator: (coords: CoordsTypes) =>
+    ({
+      type: "MOUSE_MOVE",
+      coords,
+    } as const),
 };
-
-export default figuresContainerReducer;
 
 type ActionsType = InferActionsTypes<typeof actions>;

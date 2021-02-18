@@ -1,29 +1,30 @@
-import React, { useState } from "react";
-import { Provider } from "react-redux";
+import React from "react";
+import { Provider, useDispatch } from "react-redux";
 import "./App.css";
+import { Canvas } from "./components/Canvas/Canvas";
 import { CanvasContainer } from "./components/CanvasContainer";
 import { FiguresContainer } from "./components/FiguresContainer";
+import { actions } from "./redux/appReducer";
 import store from "./redux/reduxStore";
 
 function App() {
-  const [ev, setEv] = useState({x: 0, y: 0});
+  const dispatch = useDispatch();
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    setEv({x: event.clientX, y: event.clientY})
-
-    
-  }
+  const handleMouseMove = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    const coords = { x: event.clientX, y: event.clientY };
+    dispatch(actions.onMouseMoveActionCreator(coords));
+  };
 
   return (
     <Provider store={store}>
-      <div className="App" onMouseDown={handleMouseDown}>
-        <div id="grid">
+      <div className="App">
+        <div id="grid" onMouseMove={handleMouseMove}>
           <div className="figures">figures</div>
-          <div className="canvas" id="canvas">
-            canvas <br />
-            {`event.clientX => ${ev.x}`} <br />
-            {`event.clientY => ${ev.y}`}
-          </div>
+
+          <Canvas />
+
           <FiguresContainer />
           <CanvasContainer />
         </div>
@@ -31,5 +32,5 @@ function App() {
     </Provider>
   );
 }
-
+ 
 export default App;

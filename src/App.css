@@ -10,18 +10,17 @@ html, body {
 .circle {
   margin: 10px;
   width: 100px;
-  height: 100px;
+  height: 100px;  
   border-radius: 50%;
   position: absolute;
   border: solid 2px black;
 }
 
 .square {
-  margin: 10px;
+  margin: 150px 10px;
   height: 100px;
   width: 150px;
   border: solid 2px black;
-  top: 50vh;
   position: absolute;
 }
 
@@ -30,12 +29,11 @@ html, body {
   width: 100vw;
   height: 100vh;
   /* grid-template-columns: 2fr 8fr; */
-  grid-template: 20vh 80vh / 10vw 90vw;
+  grid-template: 80px 800px / 200px 800px;
 }
 
 .figures {
   border: black 1px solid;
-
 }
 
 .canvas {
@@ -48,6 +46,4 @@ html, body {
 
 .canvasContainer {
   border: black 1px solid;
-  height: 100%;
-  width: 100%;
 }

@@ -4,9 +4,9 @@ import { Square } from "./figures/Square";
 
 type PropsType = {};
 
-export const FiguresContainer: React.FC<PropsType> = (props) => {
+export const Figures: React.FC<PropsType> = (props) => {
   return (
-    <div className="figuresContainer" id="container">
+    <div className="figures" id="figures">
       <Circle />
       <Square />
     </div>

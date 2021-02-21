@@ -1,10 +1,10 @@
-import { CoordsTypes } from "./../types";
+import { CoordsType, FigureDataType } from "./../types";
 import { InferActionsTypes } from "./reduxStore";
 
 let initialState = {
   isDragging: false,
-  containerTop: null as number | null,
-  coords: null as CoordsTypes | null,
+  coords: null as CoordsType | null,
+  figuresData: null as FigureDataType | null,
 };
 
 export type initialStateType = typeof initialState;
@@ -21,10 +21,10 @@ export const appReducer = (
       };
     }
 
-    case "GET_CONTAINER_TOP": {
+    case "DRAG_START": {
       return {
         ...state,
-        containerTop: action.top,
+        figuresData: action.figuresData,
       };
     }
 
@@ -40,12 +40,11 @@ export const actions = {
       x,
       y,
     } as const),
-    getContainerTop: (top: number) =>
+  onDragStartActionCreator: (figuresData: FigureDataType) =>
     ({
-      type: "GET_CONTAINER_TOP",
-      top
+      type: "DRAG_START",
+      figuresData,
     } as const),
-  
 };
 
 type ActionsType = InferActionsTypes<typeof actions>;

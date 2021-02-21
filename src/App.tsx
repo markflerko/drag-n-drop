@@ -1,30 +1,37 @@
-import React, { useLayoutEffect } from "react";
+//@ts-nocheck
+import React, { useLayoutEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import "./App.css";
-import { Canvas } from "./components/Canvas/Canvas";
-import { CanvasContainer } from "./components/CanvasContainer";
-import { FiguresContainer } from "./components/FiguresContainer";
+import { Canvas } from "./components/Canvas";
+import { Figures } from "./components/Figures";
 import { actions } from "./redux/appReducer";
 import store from "./redux/reduxStore";
 
 function App() {
+  const [circleCoords, setCircleCoords] = useState({});
+  const [squareCoords, setSquareCoords] = useState({});
+  const [canvasCoords, setcanvasCoords] = useState({});
+
   const dispatch = useDispatch();
 
   useLayoutEffect(() => {
-    const container = document.getElementById("container");
-    const circle = document.getElementById("circle");
-    const square = document.getElementById("square");
-    //@ts-ignore
-    dispatch(actions.getContainerTop(container?.getBoundingClientRect().top))
-  })
+    const circle = document.getElementById("circle").getBoundingClientRect();
+    const square = document.getElementById("square").getBoundingClientRect();
+    const canvas = document.getElementById("canvas").getBoundingClientRect();
+    setCircleCoords(circle)
+    setSquareCoords(square)
+    setcanvasCoords(canvas)
+  }, [])
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
-    console.log(event.clientX, event.clientY)
-    console.dir(event)
+    console.log(canvasCoords)
+    const shiftX = squareCoords.x - event.clientX - canvasCoords.x
+    const shiftY = squareCoords.y - event.clientY - canvasCoords.y
+    const name = event.target.id;
+    dispatch(actions.onDragStartActionCreator({shiftX, shiftY, name}));
   }
-    
+  
   const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
-    console.log('handleDragEnd')
     dispatch(actions.onDragEndActionCreator(event.clientX, event.clientY))
   }
 
@@ -36,12 +43,11 @@ function App() {
           onDragEnd={handleDragEnd}
           onDragStart={handleDragStart}
         >
-          <div className="figures">figures</div>
+          <div className="figuresTitle" id="figuresTitle">figures</div>
+          <div className="canvasTitle" id="canvasTitle">canvas</div>
 
+          <Figures />
           <Canvas />
-
-          <FiguresContainer />
-          <CanvasContainer />
         </div>
       </div>
     </Provider>

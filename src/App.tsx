@@ -6,6 +6,7 @@ import { Canvas } from "./components/Canvas";
 import { Figures } from "./components/Figures";
 import { actions } from "./redux/appReducer";
 import store from "./redux/reduxStore";
+import { calculateShifts } from "./utils/drawing";
 
 function App() {
   const [circleCoords, setCircleCoords] = useState({});
@@ -13,8 +14,6 @@ function App() {
   const [canvasCoords, setcanvasCoords] = useState({});
 
   const [dragStartData, setDragStartData] = useState({});
-
-  const [coords, setCoords] = useState({});
 
   const dispatch = useDispatch();
 
@@ -29,16 +28,14 @@ function App() {
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     const name = event.target.id;
-    let shiftX = 0;
-    let shiftY = 0;
 
-    if (name === "square") {
-      shiftX = squareCoords.x - event.clientX - canvasCoords.x;
-      shiftY = squareCoords.y - event.clientY - canvasCoords.y;
-    } else if (name === "circle") {
-      shiftX = circleCoords.x + circleCoords.width/2 - event.clientX - canvasCoords.x;
-      shiftY = circleCoords.y + circleCoords.height/2 - event.clientY - canvasCoords.y;
-    }
+    const { shiftX, shiftY } = calculateShifts(
+      name,
+      squareCoords,
+      circleCoords,
+      event,
+      canvasCoords
+    );
 
     setDragStartData({ shiftX, shiftY, name });
   };
@@ -50,21 +47,10 @@ function App() {
     dispatch(actions.onDragEndActionCreator(x, y, dragStartData.name));
   };
 
-  const handleMouseMove = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    setCoords({});
-  };
-
   return (
     <Provider store={store}>
       <div className="App">
-        <div
-          id="grid"
-          onDragEnd={handleDragEnd}
-          onDragStart={handleDragStart}
-          onMouseMove={handleMouseMove}
-        >
+        <div id="grid" onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
           <div className="figuresTitle" id="figuresTitle">
             figures
           </div>

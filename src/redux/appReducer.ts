@@ -3,7 +3,7 @@ import { InferActionsTypes } from "./reduxStore";
 
 let initialState = {
   isDragging: false,
-  figuresData: null as FigureDataType | null,
+  figuresDataArray: [] as Array<FigureDataType>,
 };
 
 export type initialStateType = typeof initialState;
@@ -16,7 +16,7 @@ export const appReducer = (
     case "DRAG_END": {
       return {
         ...state,
-        figuresData: { ...state.figuresData, x: action.x, y: action.y, name: action.name },
+        figuresDataArray: [ ...state.figuresDataArray, {x: action.x, y: action.y, name: action.name} ],
       };
     }
 

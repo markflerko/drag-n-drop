@@ -1,19 +1,17 @@
 //@ts-nocheck
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { AppStateType } from "../redux/reduxStore";
 
 type PropsType = {};
 
 export const Canvas: React.FC<PropsType> = (props) => {
-  const figuresData = useSelector(
-    (state: AppStateType) => state.app.figuresData
-  );
   const coords = useSelector((state: AppStateType) => state.app.coords);
 
+  const canvas = useRef();
+
   useLayoutEffect(() => {
-    const canvas = document.getElementById("canvas");
-    const context = canvas.getContext("2d");
+    const context = canvas.current.getContext("2d");
 
     {
       // context.clearRect(0, 0, canvas.width, canvas.height)
@@ -32,17 +30,17 @@ export const Canvas: React.FC<PropsType> = (props) => {
     }
 
     context.strokeRect(
-      coords?.x + figuresData?.shiftX,
-      coords?.y + figuresData?.shiftY,
+      coords?.x,
+      coords?.y,
       150,
       100
     );
     // context.strokeRect(coords?.x, coords?.y, 150, 100);
-    console.log(figuresData);
   }, [coords]);
 
   return (
     <canvas
+      ref={canvas}
       className="canvasContainer"
       id="canvas"
       width="800"

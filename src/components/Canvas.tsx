@@ -6,7 +6,9 @@ import { AppStateType } from "../redux/reduxStore";
 type PropsType = {};
 
 export const Canvas: React.FC<PropsType> = (props) => {
-  const coords = useSelector((state: AppStateType) => state.app.coords);
+  const figuresData = useSelector(
+    (state: AppStateType) => state.app.figuresData
+  );
 
   const canvas = useRef();
 
@@ -29,14 +31,15 @@ export const Canvas: React.FC<PropsType> = (props) => {
       // getFigCenter -> utils.js
     }
 
-    context.strokeRect(
-      coords?.x,
-      coords?.y,
-      150,
-      100
-    );
-    // context.strokeRect(coords?.x, coords?.y, 150, 100);
-  }, [coords]);
+    console.log(figuresData);
+    if (figuresData?.name === "square") {
+      context.strokeRect(figuresData?.x, figuresData?.y, 150, 100);
+    } else if (figuresData?.name === "circle") {
+      context.arc(figuresData?.x, figuresData?.y, 50, 0, Math.PI * 2);
+      context.stroke();
+      context.beginPath();
+    }
+  }, [figuresData]);
 
   return (
     <canvas

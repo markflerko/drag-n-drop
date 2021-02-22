@@ -1,9 +1,8 @@
-import { CoordsType, FigureDataType } from "./../types";
+import { FigureDataType } from "./../types";
 import { InferActionsTypes } from "./reduxStore";
 
 let initialState = {
   isDragging: false,
-  coords: null as CoordsType | null,
   figuresData: null as FigureDataType | null,
 };
 
@@ -17,14 +16,7 @@ export const appReducer = (
     case "DRAG_END": {
       return {
         ...state,
-        coords: { ...state.coords, x: action.x, y: action.y },
-      };
-    }
-
-    case "DRAG_START": {
-      return {
-        ...state,
-        figuresData: action.figuresData,
+        figuresData: { ...state.figuresData, x: action.x, y: action.y, name: action.name },
       };
     }
 
@@ -34,16 +26,12 @@ export const appReducer = (
 };
 
 export const actions = {
-  onDragEndActionCreator: (x: number, y: number) =>
+  onDragEndActionCreator: (x: number, y: number, name: string) =>
     ({
       type: "DRAG_END",
       x,
       y,
-    } as const),
-  onDragStartActionCreator: (figuresData: FigureDataType) =>
-    ({
-      type: "DRAG_START",
-      figuresData,
+      name
     } as const),
 };
 

@@ -14,6 +14,8 @@ function App() {
 
   const [dragStartData, setDragStartData] = useState({});
 
+  const [coords, setCoords] = useState({});
+
   const dispatch = useDispatch();
 
   useLayoutEffect(() => {
@@ -26,9 +28,18 @@ function App() {
   }, []);
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
-    const shiftX = squareCoords.x - event.clientX - canvasCoords.x;
-    const shiftY = squareCoords.y - event.clientY - canvasCoords.y;
     const name = event.target.id;
+    let shiftX = 0;
+    let shiftY = 0;
+
+    if (name === "square") {
+      shiftX = squareCoords.x - event.clientX - canvasCoords.x;
+      shiftY = squareCoords.y - event.clientY - canvasCoords.y;
+    } else if (name === "circle") {
+      shiftX = circleCoords.x + circleCoords.width/2 - event.clientX - canvasCoords.x;
+      shiftY = circleCoords.y + circleCoords.height/2 - event.clientY - canvasCoords.y;
+    }
+
     setDragStartData({ shiftX, shiftY, name });
   };
 
@@ -36,13 +47,24 @@ function App() {
     const x = event.clientX + dragStartData.shiftX;
     const y = event.clientY + dragStartData.shiftY;
 
-    dispatch(actions.onDragEndActionCreator(x, y));
+    dispatch(actions.onDragEndActionCreator(x, y, dragStartData.name));
+  };
+
+  const handleMouseMove = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    setCoords({});
   };
 
   return (
     <Provider store={store}>
       <div className="App">
-        <div id="grid" onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+        <div
+          id="grid"
+          onDragEnd={handleDragEnd}
+          onDragStart={handleDragStart}
+          onMouseMove={handleMouseMove}
+        >
           <div className="figuresTitle" id="figuresTitle">
             figures
           </div>

@@ -8,7 +8,7 @@ export type ContainerType = {
 }
 
 export type FigureDataType = {
+  x: number,
+  y: number
   name: string,
-  shiftX: number,
-  shiftY: number
 }

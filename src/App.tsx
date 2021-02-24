@@ -41,7 +41,7 @@ function App() {
     const y = event.clientY + dragStartData.shiftY
     const name = dragStartData.name
 
-    setFiguresData((prevState) => [...prevState, { x, y, name, width: 100, height: 150, id: prevState.length}])
+    setFiguresData((prevState) => [...prevState, { x, y, name, width: 100, height: 150, id: prevState.length }])
   }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -50,18 +50,28 @@ function App() {
     })
 
     if (el) {
+      const shiftX = el.x - (event.clientX - canvasCoords.x)
+      const shiftY = el.y - (event.clientY - canvasCoords.y)
       setMode('moving')
-      setMovableElement(el)
+      setMovableElement({ ...el, shiftX, shiftY })
     }
   }
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (mode === 'moving') {
-      
-      const figuresDataCopy = [...figuresData];
-      figuresDataCopy[movableElement.id] = {...movableElement, x: event.clientX, y: event.clientY}
+      const figuresDataCopy = [...figuresData]
+
+      figuresDataCopy[movableElement.id] = {
+        ...movableElement,
+        x: event.clientX - canvasCoords.x + movableElement.shiftX,
+        y: event.clientY - canvasCoords.y + movableElement.shiftY,
+      }
       setFiguresData(figuresDataCopy)
     }
+  }
+
+  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    setMode('')
   }
 
   return (
@@ -73,6 +83,7 @@ function App() {
           onDragStart={handleDragStart}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
         >
           <div className="figuresTitle" id="figuresTitle">
             figures

@@ -41,7 +41,7 @@ function App() {
     const y = event.clientY + dragStartData.shiftY
     const name = dragStartData.name
 
-    setFiguresData((prevState) => [...prevState, { x, y, name, width: 100, height: 150, id: prevState.length }])
+    setFiguresData((prevState) => [...prevState, { x, y, name, width: 150, height: 100, id: prevState.length }])
   }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -50,6 +50,7 @@ function App() {
     })
 
     if (el) {
+      console.log('insider')
       const shiftX = el.x - (event.clientX - canvasCoords.x)
       const shiftY = el.y - (event.clientY - canvasCoords.y)
       setMode('moving')

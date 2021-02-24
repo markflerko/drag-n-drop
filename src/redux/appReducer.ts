@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FigureDataType } from "./../types";
 import { InferActionsTypes } from "./reduxStore";
 

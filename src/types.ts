@@ -9,6 +9,9 @@ export type ContainerType = {
 
 export type FigureDataType = {
   x: number,
-  y: number
+  y: number,
   name: string,
+  width: number,
+  height: number,
+  id: number,
 }

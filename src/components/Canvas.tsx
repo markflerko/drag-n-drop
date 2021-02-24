@@ -1,16 +1,13 @@
 //@ts-nocheck
 import React, { useLayoutEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { AppStateType } from "../redux/reduxStore";
+import { FigureDataType } from "../types";
 import { drawing } from "../utils/drawing";
 
-type PropsType = {};
+type PropsType = {
+  figuresData: Array<FigureDataType>,
+};
 
-export const Canvas: React.FC<PropsType> = (props) => {
-  const figuresData = useSelector(
-    (state: AppStateType) => state.app.figuresDataArray
-  );
-
+export const Canvas: React.FC<PropsType> = ({ figuresData }) => {
   const canvas = useRef();
 
   useLayoutEffect(() => {

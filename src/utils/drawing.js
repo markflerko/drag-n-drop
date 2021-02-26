@@ -68,8 +68,6 @@ export const select = (element, array) => {
   });
 
   clearedArray.push(clearedArray.splice(index, 1)[0])
-  console.log(array);
-  console.log(clearedArray);
   return clearedArray;
 }
 

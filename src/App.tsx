@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
 import store from './redux/reduxStore'
-import { calculateShifts, isInside, move, select } from './utils/drawing'
+import { calculateShifts, isInside, select } from './utils/drawing'
 
 function App() {
   const [circleCoords, setCircleCoords] = useState({})
@@ -57,6 +57,7 @@ function App() {
     if (el) {
       const figuresDataSelected = select(el, figuresData)
       setFiguresData(figuresDataSelected)
+
       const shiftX = el.x - (event.clientX - canvasCoords.x)
       const shiftY = el.y - (event.clientY - canvasCoords.y)
       setMode('moving')
@@ -69,9 +70,15 @@ function App() {
       const shiftX = event.clientX - canvasCoords.x
       const shiftY = event.clientY - canvasCoords.y
 
-      const figuresDataMoved = move(movableElement, figuresData, shiftX, shiftY)
+      // const figuresDataMoved = move(movableElement, figuresData, shiftX, shiftY)
+      const figuresDataCopy = [...figuresData]
+      figuresDataCopy[figuresDataCopy.length - 1] = {
+        ...movableElement,
+        x: shiftX + movableElement.shiftX,
+        y: shiftY + movableElement.shiftY,
+      }
 
-      setFiguresData(figuresDataMoved)
+      setFiguresData(figuresDataCopy)
     }
   }
 

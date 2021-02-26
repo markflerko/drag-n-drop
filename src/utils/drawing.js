@@ -13,7 +13,7 @@ export const drawing = (context, figuresData) => {
       context.fillStyle = 'green';
       context.arc(item?.x, item?.y, item?.height / 2, 0, Math.PI * 2);
       context.fill();
-      context.stroke();
+      // context.stroke();
     }
     if (item?.selected) {
       context.strokeStyle = 'orangered';

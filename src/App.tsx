@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
 import store from './redux/reduxStore'
-import { calculateShifts, isInside } from './utils/drawing'
+import { calculateShifts, isInside, move, select } from './utils/drawing'
 
 function App() {
   const [circleCoords, setCircleCoords] = useState({})
@@ -40,7 +40,10 @@ function App() {
     const y = event.clientY + dragStartData.shiftY
     const name = dragStartData.name
 
-    setFiguresData((prevState) => [...prevState, { x, y, name, width: 150, height: 100, id: prevState.length }])
+    setFiguresData((prevState) => [
+      ...prevState,
+      { x, y, name, width: 150, height: 100, id: prevState.length, selected: false },
+    ])
   }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -52,7 +55,8 @@ function App() {
       })
 
     if (el) {
-      // select(el, canvas); <- utils.js
+      const figuresDataSelected = select(el, figuresData)
+      setFiguresData(figuresDataSelected)
       const shiftX = el.x - (event.clientX - canvasCoords.x)
       const shiftY = el.y - (event.clientY - canvasCoords.y)
       setMode('moving')
@@ -62,26 +66,12 @@ function App() {
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (mode === 'moving') {
-      // moving(el, canvas); <- app.tsx
+      const shiftX = event.clientX - canvasCoords.x
+      const shiftY = event.clientY - canvasCoords.y
 
-      {
-        // let figuresDataCopy = [...figuresData]
-        // const el = figuresDataCopy.find((element) => element.id === movableElement.id)
-        // el = {
-        //   ...movableElement,
-        //   x: event.clientX - canvasCoords.x + movableElement.shiftX,
-        //   y: event.clientY - canvasCoords.y + movableElement.shiftY,
-        // }
-        // figuresDataCopy = [...]
-      }
-      const figuresDataCopy = [...figuresData]
+      const figuresDataMoved = move(movableElement, figuresData, shiftX, shiftY)
 
-      figuresDataCopy[movableElement.id] = {
-        ...movableElement,
-        x: event.clientX - canvasCoords.x + movableElement.shiftX,
-        y: event.clientY - canvasCoords.y + movableElement.shiftY,
-      }
-      setFiguresData(figuresDataCopy)
+      setFiguresData(figuresDataMoved)
     }
   }
 

@@ -3,7 +3,6 @@ import React, { useLayoutEffect, useState } from 'react'
 import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
-import { Figures } from './components/Figures'
 import store from './redux/reduxStore'
 import { calculateShifts, isInside } from './utils/drawing'
 
@@ -45,12 +44,15 @@ function App() {
   }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const el = figuresData.find((element) => {
-      return isInside(element, event.clientX - canvasCoords.x, event.clientY - canvasCoords.y)
-    })
+    const el = figuresData
+      .slice()
+      .reverse()
+      .find((element) => {
+        return isInside(element, event.clientX - canvasCoords.x, event.clientY - canvasCoords.y)
+      })
 
     if (el) {
-      console.log('insider')
+      // select(el, canvas); <- utils.js
       const shiftX = el.x - (event.clientX - canvasCoords.x)
       const shiftY = el.y - (event.clientY - canvasCoords.y)
       setMode('moving')
@@ -60,6 +62,18 @@ function App() {
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (mode === 'moving') {
+      // moving(el, canvas); <- app.tsx
+
+      {
+        // let figuresDataCopy = [...figuresData]
+        // const el = figuresDataCopy.find((element) => element.id === movableElement.id)
+        // el = {
+        //   ...movableElement,
+        //   x: event.clientX - canvasCoords.x + movableElement.shiftX,
+        //   y: event.clientY - canvasCoords.y + movableElement.shiftY,
+        // }
+        // figuresDataCopy = [...]
+      }
       const figuresDataCopy = [...figuresData]
 
       figuresDataCopy[movableElement.id] = {
@@ -93,7 +107,10 @@ function App() {
             canvas
           </div>
 
-          <Figures />
+          <div className="figures" id="figures">
+            <div className="circle draggable" id="circle" draggable="true"></div>
+            <div className="square draggable" id="square" draggable="true"></div>
+          </div>
           <Canvas figuresData={figuresData} />
         </div>
       </div>

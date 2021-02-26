@@ -3,10 +3,12 @@ export const drawing = (context, figuresData) => {
   figuresData.forEach((item) => {
     context.beginPath();
     if (item?.name === "square") {
-      context.fillStyle = 'black';
+      context.strokeStyle='black';
+      context.lineWidth=1;
+      context.rect(item?.x, item?.y, item?.width, item?.height);
+      context.stroke();
+      context.fillStyle='blue';
       context.fillRect(item?.x, item?.y, item?.width, item?.height);
-      context.fillStyle = 'blue';
-      context.fillRect(item?.x + 1, item?.y + 1, item?.width - 2, item?.height - 2);
     } else if (item?.name === "circle") {
       context.fillStyle = 'green';
       context.arc(item?.x, item?.y, item?.height / 2, 0, Math.PI * 2);
@@ -42,10 +44,12 @@ export const isInside = (element, x, y) => {
   }
 
   if (name === 'circle') {
-    let r = width / 2;
-    console.log(element, x, y)
-    console.log(`${x} >= ${x1 - r} && ${x} <= ${x1 + r} && ${y >= y1 + r} && ${y <= y1 + r}`)
+    let r = height / 2;
     return x >= x1 - r && x <= x1 + r && y >= y1 - r && y <= y1 + r
   }
+
+}
+
+export const select = () => {
 
 }

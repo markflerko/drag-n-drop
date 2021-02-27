@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
@@ -7,6 +7,10 @@ import store from './redux/reduxStore'
 import { calculateShifts, isInside, select } from './utils/drawing'
 
 function App() {
+  const canvas = useRef()
+  const circle = useRef()
+  const square = useRef()
+
   const [circleCoords, setCircleCoords] = useState({})
   const [squareCoords, setSquareCoords] = useState({})
   const [canvasCoords, setcanvasCoords] = useState({})
@@ -16,15 +20,12 @@ function App() {
   const [figuresData, setFiguresData] = useState([])
 
   const [movableElement, setMovableElement] = useState(null)
-  const [mode, setMode] = useState('')
+  const [mode, setMode] = useState(null)
 
   useLayoutEffect(() => {
-    const circle = document.getElementById('circle').getBoundingClientRect()
-    const square = document.getElementById('square').getBoundingClientRect()
-    const canvas = document.getElementById('canvas').getBoundingClientRect()
-    setCircleCoords(circle)
-    setSquareCoords(square)
-    setcanvasCoords(canvas)
+    setCircleCoords(circle.current.getBoundingClientRect())
+    setSquareCoords(square.current.getBoundingClientRect())
+    setcanvasCoords(canvas.current.getBoundingClientRect())
   }, [])
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
@@ -36,12 +37,14 @@ function App() {
   }
 
   const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
+    //to drawing js
     const x = event.clientX + dragStartData.shiftX
     const y = event.clientY + dragStartData.shiftY
     const name = dragStartData.name
 
     setFiguresData((prevState) => [
       ...prevState,
+      // height, width get throught dom, id -> Date.now(), shortid lib
       { x, y, name, width: 150, height: 100, id: prevState.length, selected: false },
     ])
   }
@@ -61,29 +64,21 @@ function App() {
       const shiftX = el.x - (event.clientX - canvasCoords.x)
       const shiftY = el.y - (event.clientY - canvasCoords.y)
       setMode('moving')
-      setMovableElement({ ...el, shiftX, shiftY })
+      setMovableElement({ ...el, shiftX, shiftY, selected: true })
     }
   }
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (mode === 'moving') {
-      const shiftX = event.clientX - canvasCoords.x
-      const shiftY = event.clientY - canvasCoords.y
+      const x = event.clientX - canvasCoords.x + movableElement.shiftX
+      const y = event.clientY - canvasCoords.y + movableElement.shiftY
 
-      // const figuresDataMoved = move(movableElement, figuresData, shiftX, shiftY)
-      const figuresDataCopy = [...figuresData]
-      figuresDataCopy[figuresDataCopy.length - 1] = {
-        ...movableElement,
-        x: shiftX + movableElement.shiftX,
-        y: shiftY + movableElement.shiftY,
-      }
-
-      setFiguresData(figuresDataCopy)
+      setFiguresData([...figuresData.slice(0, -1), {...movableElement, x, y}])
     }
   }
 
   const handleMouseUp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    setMode('')
+    setMode(null)
   }
 
   return (
@@ -105,10 +100,10 @@ function App() {
           </div>
 
           <div className="figures" id="figures">
-            <div className="circle draggable" id="circle" draggable="true"></div>
-            <div className="square draggable" id="square" draggable="true"></div>
+            <div className="circle draggable" id="circle" draggable="true" ref={circle}></div>
+            <div className="square draggable" id="square" draggable="true" ref={square}></div>
           </div>
-          <Canvas figuresData={figuresData} />
+          <Canvas figuresData={figuresData} canvas={canvas} />
         </div>
       </div>
     </Provider>

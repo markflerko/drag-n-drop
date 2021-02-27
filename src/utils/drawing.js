@@ -50,7 +50,8 @@ export const isInside = (element, x, y) => {
 
   if (name === 'circle') {
     let r = height / 2;
-    return x >= x1 - r && x <= x1 + r && y >= y1 - r && y <= y1 + r
+    console.log(`${x**2} ${y**2} ${r**2}`)
+    return x >= x1 - r && x <= x1 + r && y >= y1 - r && y <= y1 + r && (Math.sqrt((x-x1)**2 + (y-y1)**2) < r)
   }
 
 }

@@ -67,16 +67,16 @@ function App() {
 
       const shiftX = el.x - (event.clientX - canvasCoords.x)
       const shiftY = el.y - (event.clientY - canvasCoords.y)
-      setMode('moving')
+      setMode('moveInsideCanvas')
       setMovableElement({ ...el, shiftX, shiftY, selected: true })
     }
   }
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (mode === 'moving') {
+    if (mode === 'moveInsideCanvas') {
       move(event);
 
-    } else if (mode === 'dragedOverCanvas') {
+    } else if (mode === 'moveOutsideCanvas') {
       setShowFigure(true)
       
       move(event);
@@ -84,33 +84,17 @@ function App() {
       const left = event.clientX + movableElement.shiftX
       const top = event.clientY + movableElement.shiftY
       setUnderMouse({ left, top })
-      
-      // setMode('movingOverCanvas')
-    } /* else if (mode === 'movingOverCanvas') {
-      move(event);
-
-      const left = event.clientX + movableElement.shiftX
-      const top = event.clientY + movableElement.shiftY
-      setUnderMouse({ left, top })
-    } */
+    }
   }
 
   const handleMouseUp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (mode === 'moving') {
+    if (mode === 'moveInsideCanvas') {
       setMode(null)
-      // setShowFigure(false)
-    }
-
-    if (mode === 'dragedOverCanvas') {
       setShowFigure(false)
+    } else if (mode === 'moveOutsideCanvas') {
       setMode(null)
+      setShowFigure(false)
     }
-
-    // if (mode === 'dragedIntoCanvas') {
-    //   setShowFigure(false)
-    //   setMode(null)
-    //   removeFigure()
-    // }
   }
 
   const removeFigure = () => {
@@ -157,8 +141,8 @@ function App() {
           <Canvas
             figuresData={figuresData}
             canvas={canvas}
-            dragedOverCanvas={() => setMode('dragedOverCanvas')}
-            dragedIntoCanvas={() => setMode('dragedIntoCanvas')}
+            moveInsideCanvas={() => {setMode('moveInsideCanvas'); setShowFigure(false)}}
+            moveOutsideCanvas={() => setMode('moveOutsideCanvas')}
             mode={mode}
           />
         </div>

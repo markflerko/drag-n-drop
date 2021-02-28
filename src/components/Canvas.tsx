@@ -7,7 +7,7 @@ type PropsType = {
   figuresData: Array<FigureDataType>,
 };
 
-export const Canvas: React.FC<PropsType> = ({ figuresData, canvas, mode, dragedOverCanvas, dragedIntoCanvas }) => {
+export const Canvas: React.FC<PropsType> = ({ figuresData, canvas, mode, moveInsideCanvas, moveOutsideCanvas }) => {
   useLayoutEffect(() => {
     const context = canvas.current.getContext("2d");
     context.clearRect(0, 0, canvas.current.width, canvas.current.height);
@@ -16,14 +16,14 @@ export const Canvas: React.FC<PropsType> = ({ figuresData, canvas, mode, dragedO
   }, [figuresData]);
 
   const handleMouseLeave = (event) => {
-    if(mode === 'moving') {
-      dragedOverCanvas()
+    if(mode === 'moveInsideCanvas') {
+      moveOutsideCanvas()
     }
   }
 
   const handleMouseEnter = (event) => {
-    if(mode === 'movingOverCanvas') {
-      dragedIntoCanvas()
+    if(mode === 'moveOutsideCanvas') {
+      moveInsideCanvas()
     }
   }
 
@@ -35,7 +35,7 @@ export const Canvas: React.FC<PropsType> = ({ figuresData, canvas, mode, dragedO
       width="800"
       height="800"
       onMouseLeave={handleMouseLeave}
-      // onMouseEnter={handleMouseEnter}
+      onMouseEnter={handleMouseEnter}
     ></canvas>
   );
 };

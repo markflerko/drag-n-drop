@@ -73,7 +73,7 @@ function App() {
       const x = event.clientX - canvasCoords.x + movableElement.shiftX
       const y = event.clientY - canvasCoords.y + movableElement.shiftY
 
-      const {newX, newY} = checkCollision(x, y, movableElement, canvasCoords, event)
+      const {newX, newY} = checkCollision(x, y, movableElement, canvasCoords)
 
       setFiguresData([...figuresData.slice(0, -1), {...movableElement, x: newX, y: newY}])
     }

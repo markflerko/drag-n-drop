@@ -74,23 +74,21 @@ export const move = (event, canvasCoords, figuresData, movableElement) => {
   return figuresDataMoved
 }
 
-export const checkCollision = (x, y, movableElement, canvasCoords, event) => {
+export const checkCollision = (x, y, movableElement, canvasCoords) => {
   let newX = x
   let newY = y
-  if ((movableElement.name = 'square')) {
-    newX =
-      x <= 0
-        ? 0
-        : x >= (canvasCoords.width - movableElement.width)
-        ? (canvasCoords.width - movableElement.width)
-        : x
+  if ((movableElement.name === 'square')) {
+    newX = x <= 0 ? 0 : x >= canvasCoords.width - movableElement.width ? canvasCoords.width - movableElement.width : x
 
     newY =
-      y <= 0
-        ? 0
-        : y >= (canvasCoords.height - movableElement.height)
-        ? (canvasCoords.height - movableElement.height)
-        : y
+      y <= 0 ? 0 : y >= canvasCoords.height - movableElement.height ? canvasCoords.height - movableElement.height : y
+  }
+
+  if ((movableElement.name === 'circle')) {
+    const r = movableElement.height / 2
+    newX = x <= r ? r : x >= canvasCoords.width - r ? canvasCoords.width - r : x
+
+    newY = y <= r ? r : y >= canvasCoords.height - r ? canvasCoords.height - r : y
   }
 
   return { newX, newY }

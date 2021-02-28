@@ -58,7 +58,6 @@ export const select = (element, array) => {
     .map((item) => ({ ...item, selected: false }))
 
   figuresDataSelected.push({ ...element, selected: true })
-  console.log(figuresDataSelected)
   return figuresDataSelected
 }
 

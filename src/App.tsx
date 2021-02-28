@@ -3,6 +3,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react'
 import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
+import { MovedFigure } from './components/MovedFigure/MovedFigure'
 import store from './redux/reduxStore'
 import { calculateShifts, checkCollision, isInside, select } from './utils/drawing'
 
@@ -21,6 +22,9 @@ function App() {
 
   const [movableElement, setMovableElement] = useState(null)
   const [mode, setMode] = useState(null)
+
+  const [underMouse, setUnderMouse] = useState({})
+  const [showFigure, setShowFigure] = useState(false)
 
   useLayoutEffect(() => {
     setCircleCoords(circle.current.getBoundingClientRect())
@@ -70,35 +74,75 @@ function App() {
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (mode === 'moving') {
-      const x = event.clientX - canvasCoords.x + movableElement.shiftX
-      const y = event.clientY - canvasCoords.y + movableElement.shiftY
+      move(event);
 
-      const {newX, newY} = checkCollision(x, y, movableElement, canvasCoords)
+    } else if (mode === 'dragedOverCanvas') {
+      setShowFigure(true)
+      
+      move(event);
+      
+      const left = event.clientX + movableElement.shiftX
+      const top = event.clientY + movableElement.shiftY
+      setUnderMouse({ left, top })
+      
+      // setMode('movingOverCanvas')
+    } /* else if (mode === 'movingOverCanvas') {
+      move(event);
 
-      setFiguresData([...figuresData.slice(0, -1), {...movableElement, x: newX, y: newY}])
-    }
+      const left = event.clientX + movableElement.shiftX
+      const top = event.clientY + movableElement.shiftY
+      setUnderMouse({ left, top })
+    } */
   }
 
   const handleMouseUp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    setMode(null)
+    if (mode === 'moving') {
+      setMode(null)
+      // setShowFigure(false)
+    }
+
+    if (mode === 'dragedOverCanvas') {
+      setShowFigure(false)
+      setMode(null)
+    }
+
+    // if (mode === 'dragedIntoCanvas') {
+    //   setShowFigure(false)
+    //   setMode(null)
+    //   removeFigure()
+    // }
   }
 
-  const handleClick = () => {
-    console.log(canvasCoords);
+  const removeFigure = () => {
+    setFiguresData((arr) => arr.slice(0, -1))
+  }
+
+  const move = (event) => {
+    const x = event.clientX - canvasCoords.x + movableElement.shiftX
+    const y = event.clientY - canvasCoords.y + movableElement.shiftY
+
+    const { newX, newY } = checkCollision(x, y, movableElement, canvasCoords)
+
+    setFiguresData([...figuresData.slice(0, -1), { ...movableElement, x: newX, y: newY }])
   }
 
   return (
     <Provider store={store}>
-      <div className="App">
-        <div
-          id="grid"
-          onDragEnd={handleDragEnd}
-          onDragStart={handleDragStart}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onClick={handleClick}
-        >
+      <div
+        className="App"
+        onMouseUp={handleMouseUp}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+      >
+        <MovedFigure
+          top={underMouse.top}
+          left={underMouse.left}
+          figureType={movableElement?.name}
+          isShow={showFigure}
+        />
+        <div id="grid">
           <div className="figuresTitle" id="figuresTitle">
             figures
           </div>
@@ -110,7 +154,13 @@ function App() {
             <div className="circle draggable" id="circle" draggable="true" ref={circle}></div>
             <div className="square draggable" id="square" draggable="true" ref={square}></div>
           </div>
-          <Canvas figuresData={figuresData} canvas={canvas} />
+          <Canvas
+            figuresData={figuresData}
+            canvas={canvas}
+            dragedOverCanvas={() => setMode('dragedOverCanvas')}
+            dragedIntoCanvas={() => setMode('dragedIntoCanvas')}
+            mode={mode}
+          />
         </div>
       </div>
     </Provider>

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
 import store from './redux/reduxStore'
-import { calculateShifts, isInside, select } from './utils/drawing'
+import { calculateShifts, checkCollision, isInside, select } from './utils/drawing'
 
 function App() {
   const canvas = useRef()
@@ -45,7 +45,7 @@ function App() {
     setFiguresData((prevState) => [
       ...prevState,
       // height, width get throught dom, id -> Date.now(), shortid lib
-      { x, y, name, width: 150, height: 100, id: prevState.length, selected: false },
+      { x, y, name, width: 150, height: 100, id: Date.now(), selected: false },
     ])
   }
 
@@ -73,12 +73,18 @@ function App() {
       const x = event.clientX - canvasCoords.x + movableElement.shiftX
       const y = event.clientY - canvasCoords.y + movableElement.shiftY
 
-      setFiguresData([...figuresData.slice(0, -1), {...movableElement, x, y}])
+      const {newX, newY} = checkCollision(x, y, movableElement, canvasCoords, event)
+
+      setFiguresData([...figuresData.slice(0, -1), {...movableElement, x: newX, y: newY}])
     }
   }
 
   const handleMouseUp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setMode(null)
+  }
+
+  const handleClick = () => {
+    console.log(canvasCoords);
   }
 
   return (
@@ -91,6 +97,7 @@ function App() {
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
+          onClick={handleClick}
         >
           <div className="figuresTitle" id="figuresTitle">
             figures

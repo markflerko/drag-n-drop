@@ -58,12 +58,12 @@ export const select = (element, array) => {
     .map((item) => ({ ...item, selected: false }))
 
   figuresDataSelected.push({ ...element, selected: true })
-  console.log(figuresDataSelected);
+  console.log(figuresDataSelected)
   return figuresDataSelected
 }
 
 export const move = (event, canvasCoords, figuresData, movableElement) => {
-  const figuresDataMoved = [...figuresData];
+  const figuresDataMoved = [...figuresData]
 
   figuresDataMoved[figuresDataMoved.length - 1] = {
     ...movableElement,
@@ -74,12 +74,24 @@ export const move = (event, canvasCoords, figuresData, movableElement) => {
   return figuresDataMoved
 }
 
-// const checkCollision = (x, y, movableElement) => {
-//   let newX = null; let newY = null;
-//   if (movableElement.name = 'square') {
-//     newX = x<=0 ? 0 : x>=
-//   }
-//   x <= 0 ?
+export const checkCollision = (x, y, movableElement, canvasCoords, event) => {
+  let newX = x
+  let newY = y
+  if ((movableElement.name = 'square')) {
+    newX =
+      x <= 0
+        ? 0
+        : x >= (canvasCoords.width - movableElement.width)
+        ? (canvasCoords.width - movableElement.width)
+        : x
 
-//   return { x, y }
-// }
+    newY =
+      y <= 0
+        ? 0
+        : y >= (canvasCoords.height - movableElement.height)
+        ? (canvasCoords.height - movableElement.height)
+        : y
+  }
+
+  return { newX, newY }
+}

@@ -94,6 +94,7 @@ function App() {
     } else if (mode === 'moveOutsideCanvas') {
       setMode(null)
       setShowFigure(false)
+      removeFigure();
     }
   }
 

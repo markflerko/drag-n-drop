@@ -73,14 +73,56 @@ function App() {
   }
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (mode === 'moveInsideCanvas') {
-      move(event);
+    // console.log('outside', `
+    //   ${event.clientX > canvasCoords.right} ||
+    //     ${event.clientY > canvasCoords.bottom} ||
+    //     ${event.clientX < canvasCoords.left} ||
+    //   ${event.clientY < canvasCoords.top}`
+    // )
 
+    // console.log(
+    //   'inside',
+    //   `
+    //   ${event.clientX < canvasCoords.right} &&
+    //     ${event.clientY < canvasCoords.bottom} &&
+    //     ${event.clientX > canvasCoords.left} &&
+    //     ${event.clientY > canvasCoords.top}
+    // `,
+    // )
+
+    // console.log('inside',
+    //   event.clientX < canvasCoords.right /* ||
+    //   event.clientY < canvasCoords.bottom ||
+    //   event.clientX > canvasCoords.left ||
+    //   event.clientY > canvasCoords.top */
+    // )
+    if (mode === 'moveInsideCanvas') {
+      if (
+        event.clientX > canvasCoords.right ||
+        event.clientY > canvasCoords.bottom ||
+        event.clientX < canvasCoords.left ||
+        event.clientY < canvasCoords.top
+      ) {
+        setMode('moveOutsideCanvas')
+      }
+
+      setShowFigure(false)
+
+      move(event)
     } else if (mode === 'moveOutsideCanvas') {
+      if (
+        event.clientX < canvasCoords.right &&
+        event.clientY < canvasCoords.bottom &&
+        event.clientX > canvasCoords.left &&
+        event.clientY > canvasCoords.top
+      ) {
+        setMode('moveInsideCanvas')
+      }
+
       setShowFigure(true)
-      
-      move(event);
-      
+
+      move(event)
+
       const left = event.clientX + movableElement.shiftX
       const top = event.clientY + movableElement.shiftY
       setUnderMouse({ left, top })
@@ -94,18 +136,18 @@ function App() {
     } else if (mode === 'moveOutsideCanvas') {
       setMode(null)
       setShowFigure(false)
-      removeFigure();
+      removeFigure()
     }
   }
 
-  const handleDelete = ()  => {
-    if(figuresData[figuresData.length-1].selected) {
+  const handleDelete = () => {
+    if (figuresData[figuresData.length - 1].selected) {
       removeFigure()
     }
   }
 
   const removeFigure = () => {
-    console.log('remove');
+    console.log('remove')
     setFiguresData((arr) => arr.slice(0, -1))
   }
 
@@ -145,16 +187,10 @@ function App() {
           <div className="figures" id="figures">
             <div className="circle draggable" id="circle" draggable="true" ref={circle}></div>
             <div className="square draggable" id="square" draggable="true" ref={square}></div>
-            
-            <button className="button" onClick={handleDelete} type="button">delete</button>
+
+            {/* <button className="button" onClick={handleDelete} type="button">delete</button> */}
           </div>
-          <Canvas
-            figuresData={figuresData}
-            canvas={canvas}
-            moveInsideCanvas={() => {setMode('moveInsideCanvas'); setShowFigure(false)}}
-            moveOutsideCanvas={() => {setMode('moveOutsideCanvas'); removeFigure()}}
-            mode={mode}
-          />
+          <Canvas figuresData={figuresData} canvas={canvas} />
         </div>
       </div>
     </Provider>

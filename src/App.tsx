@@ -3,15 +3,16 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
+import { ExportJSONButton } from './components/ExportJSONButton'
 import { MovedFigure } from './components/MovedFigure/MovedFigure'
 import store from './redux/reduxStore'
 import { calculateShifts, checkCollision, isInside, select } from './utils/drawing'
 
 function App() {
-  const canvas = useRef()
-  const circle = useRef()
-  const square = useRef()
-
+  const canvas = useRef(null)
+  const circle = useRef(null)
+  const square = useRef(null)
+  
   const [circleCoords, setCircleCoords] = useState({})
   const [squareCoords, setSquareCoords] = useState({})
   const [canvasCoords, setcanvasCoords] = useState({})
@@ -133,7 +134,6 @@ function App() {
   }
 
   const removeFigure = () => {
-    console.log('remove')
     setFiguresData((arr) => arr.slice(0, -1))
   }
 
@@ -162,7 +162,7 @@ function App() {
           figureType={movableElement?.name}
           isShow={showFigure}
         />
-        <div id="grid">
+        <div className="grid">
           <div className="figuresTitle" id="figuresTitle">
             figures
           </div>
@@ -177,6 +177,8 @@ function App() {
             <button className="button" onClick={handleDelete} type="button">
               delete
             </button>
+            
+            <ExportJSONButton figuresData={figuresData} />
           </div>
           <Canvas figuresData={figuresData} canvas={canvas} />
         </div>

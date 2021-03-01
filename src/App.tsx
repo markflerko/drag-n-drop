@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
 import { ExportJSONButton } from './components/ExportJSONButton'
+import { ImportJSONButton } from './components/MovedFigure/ImportJSONButton'
 import { MovedFigure } from './components/MovedFigure/MovedFigure'
 import store from './redux/reduxStore'
 import { calculateShifts, checkCollision, isInside, select } from './utils/drawing'
@@ -179,6 +180,7 @@ function App() {
             </button>
             
             <ExportJSONButton figuresData={figuresData} />
+            <ImportJSONButton deleteFiguresData={() => setFiguresData([])} setFiguresData={setFiguresData}/>
           </div>
           <Canvas figuresData={figuresData} canvas={canvas} />
         </div>

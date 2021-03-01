@@ -72,3 +72,16 @@ canvas {
   padding: 5px;
   border: 1px solid black;
 }
+
+.import {
+  display: none;
+}
+
+.import__label {
+  position: absolute;
+  cursor: pointer;
+  bottom: 50px;
+  padding: 5px;
+  border: 1px solid black;
+  background-color: white;
+}

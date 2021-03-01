@@ -98,7 +98,14 @@ function App() {
     }
   }
 
+  const handleDelete = ()  => {
+    if(figuresData[figuresData.length-1].selected) {
+      removeFigure()
+    }
+  }
+
   const removeFigure = () => {
+    console.log('remove');
     setFiguresData((arr) => arr.slice(0, -1))
   }
 
@@ -138,12 +145,14 @@ function App() {
           <div className="figures" id="figures">
             <div className="circle draggable" id="circle" draggable="true" ref={circle}></div>
             <div className="square draggable" id="square" draggable="true" ref={square}></div>
+            
+            <button className="button" onClick={handleDelete} type="button">delete</button>
           </div>
           <Canvas
             figuresData={figuresData}
             canvas={canvas}
             moveInsideCanvas={() => {setMode('moveInsideCanvas'); setShowFigure(false)}}
-            moveOutsideCanvas={() => setMode('moveOutsideCanvas')}
+            moveOutsideCanvas={() => {setMode('moveOutsideCanvas'); removeFigure()}}
             mode={mode}
           />
         </div>

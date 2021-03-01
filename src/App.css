@@ -49,3 +49,7 @@ canvas {
 .canvasTitle {
   user-select: none;
 }
+
+.button {
+  bottom: 5px;
+}

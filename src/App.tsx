@@ -1,5 +1,5 @@
 //@ts-nocheck
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
@@ -32,6 +32,17 @@ function App() {
     setcanvasCoords(canvas.current.getBoundingClientRect())
   }, [])
 
+  useEffect(() => {
+    const data = localStorage.getItem('figures-canvas-position')
+    if (data) {
+      setFiguresData(JSON.parse(data))
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('figures-canvas-position', JSON.stringify(figuresData))
+  }, [figuresData])
+
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     const name = event.target.id
 
@@ -46,11 +57,9 @@ function App() {
     const y = event.clientY + dragStartData.shiftY
     const name = dragStartData.name
 
-    setFiguresData((prevState) => [
-      ...prevState,
-      // height, width get throught dom, id -> Date.now(), shortid lib
-      { x, y, name, width: 150, height: 100, id: Date.now(), selected: false },
-    ])
+    const figuresDataApdated = figuresData.map((item) => ({ ...item, selected: false }))
+
+    setFiguresData([...figuresDataApdated, { x, y, name, width: 150, height: 100, id: Date.now(), selected: true }])
   }
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -73,29 +82,6 @@ function App() {
   }
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    // console.log('outside', `
-    //   ${event.clientX > canvasCoords.right} ||
-    //     ${event.clientY > canvasCoords.bottom} ||
-    //     ${event.clientX < canvasCoords.left} ||
-    //   ${event.clientY < canvasCoords.top}`
-    // )
-
-    // console.log(
-    //   'inside',
-    //   `
-    //   ${event.clientX < canvasCoords.right} &&
-    //     ${event.clientY < canvasCoords.bottom} &&
-    //     ${event.clientX > canvasCoords.left} &&
-    //     ${event.clientY > canvasCoords.top}
-    // `,
-    // )
-
-    // console.log('inside',
-    //   event.clientX < canvasCoords.right /* ||
-    //   event.clientY < canvasCoords.bottom ||
-    //   event.clientX > canvasCoords.left ||
-    //   event.clientY > canvasCoords.top */
-    // )
     if (mode === 'moveInsideCanvas') {
       if (
         event.clientX > canvasCoords.right ||
@@ -188,7 +174,9 @@ function App() {
             <div className="circle draggable" id="circle" draggable="true" ref={circle}></div>
             <div className="square draggable" id="square" draggable="true" ref={square}></div>
 
-            {/* <button className="button" onClick={handleDelete} type="button">delete</button> */}
+            <button className="button" onClick={handleDelete} type="button">
+              delete
+            </button>
           </div>
           <Canvas figuresData={figuresData} canvas={canvas} />
         </div>

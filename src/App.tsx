@@ -3,22 +3,21 @@ import { Provider } from 'react-redux'
 import './App.css'
 import { Canvas } from './components/Canvas'
 import { ExportJSONButton } from './components/ExportJSONButton'
-import { ImportJSONButton } from './components/MovedFigure/ImportJSONButton'
+import { ImportJSONButton } from './components/ImportJSONButton'
 import { MovedFigure } from './components/MovedFigure/MovedFigure'
-import { initialDragStartData } from './initialStateValues/initialStateValues'
+import { initialCoords, initialDragStartData, InitialMovableElement } from './initialStateValues/initialStateValues'
 import store from './redux/reduxStore'
-import { MovableElementType } from './types'
-import { calculateShifts, select } from './utils/drawing'
-import { getMovableElementCoords, getUpperFigure, isMouseInCanvas } from './utils/utils'
+import { FigureType, MovableElementType, UnderMouseCoordsType } from './types'
+import { calculateShifts, getMovableElementCoords, getUpperFigure, isMouseInCanvas, select } from './utils/utils'
 
 function App() {
   const canvas = useRef<HTMLCanvasElement>(null)
   const circle = useRef<HTMLDivElement>(null)
   const square = useRef<HTMLDivElement>(null)
 
-  const [circleCoords, setCircleCoords] = useState({})
-  const [squareCoords, setSquareCoords] = useState({})
-  const [canvasCoords, setcanvasCoords] = useState({})
+  const [circleCoords, setCircleCoords] = useState(initialCoords)
+  const [squareCoords, setSquareCoords] = useState(initialCoords)
+  const [canvasCoords, setcanvasCoords] = useState(initialCoords)
 
   useLayoutEffect(() => {
     setCircleCoords(circle.current!.getBoundingClientRect())
@@ -27,12 +26,12 @@ function App() {
   }, [circle, canvas, square])
 
   const [dragStartData, setDragStartData] = useState(initialDragStartData)
-  const [figuresData, setFiguresData] = useState([])
+  const [figuresData, setFiguresData] = useState<Array<FigureType>>([])
 
-  const [movableElement, setMovableElement] = useState<MovableElementType | null>(null)
-  const [mode, setMode] = useState(null)
+  const [movableElement, setMovableElement] = useState(InitialMovableElement)
+  const [mode, setMode] = useState('')
 
-  const [underMouse, setUnderMouse] = useState({})
+  const [underMouseCoords, setUnderMouseCoords] = useState<UnderMouseCoordsType | null>(null)
   const [showFigure, setShowFigure] = useState(false)
 
   useEffect(() => {
@@ -46,10 +45,11 @@ function App() {
     localStorage.setItem('figures-canvas-position', JSON.stringify(figuresData))
   }, [figuresData])
 
-  const handleDragStart = (event: { target: HTMLDivElement }) => {
-    const name = event.target.id
+  const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+    const name = (event.target as HTMLDivElement).id
+    const {clientX, clientY} = event;
 
-    const { shiftX, shiftY } = calculateShifts(name, squareCoords, circleCoords, event, canvasCoords)
+    const { shiftX, shiftY } = calculateShifts({name, squareCoords, circleCoords, canvasCoords, clientX, clientY})
 
     setDragStartData({ shiftX, shiftY, name })
   }
@@ -59,7 +59,7 @@ function App() {
     const y = event.clientY + dragStartData.shiftY
     const name = dragStartData.name
 
-    const figuresDataUpdated = figuresData.map((item) => ({ ...item, selected: false }))
+    const figuresDataUpdated = figuresData.map((item: FigureType) => ({ ...item, selected: false }))
     const newFigure = { x, y, name, width: 150, height: 100, id: Date.now(), selected: true } as MovableElementType
 
     setFiguresData([...figuresDataUpdated, newFigure])
@@ -69,7 +69,7 @@ function App() {
     const upperFigure = getUpperFigure({ figuresData, event, canvasCoords })
 
     if (upperFigure) {
-      const figuresDataSelected = select(upperFigure, figuresData)
+      const figuresDataSelected = select({ upperFigure, figuresData })
       setFiguresData(figuresDataSelected)
 
       const shiftX = upperFigure.x - (event.clientX - canvasCoords.x)
@@ -95,21 +95,22 @@ function App() {
         setMode('moveInsideCanvas')
       }
 
+      setFiguresData((arr) => [...arr.slice(0, -1), { ...arr[arr.length - 1], hidden: true }])
       setShowFigure(true)
       move(event)
 
       const leftCoordsOfFigureUnderMouse = event.clientX + movableElement.shiftX
       const topCoordsOfFigureUnderMouse = event.clientY + movableElement.shiftY
-      setUnderMouse({ left: leftCoordsOfFigureUnderMouse, top: topCoordsOfFigureUnderMouse })
+      setUnderMouseCoords({ left: leftCoordsOfFigureUnderMouse, top: topCoordsOfFigureUnderMouse })
     }
   }
 
-  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleMouseUp = () => {
     if (mode === 'moveInsideCanvas') {
-      setMode(null)
+      setMode('')
       setShowFigure(false)
     } else if (mode === 'moveOutsideCanvas') {
-      setMode(null)
+      setMode('')
       setShowFigure(false)
       removeFigure()
     }
@@ -119,7 +120,7 @@ function App() {
     setFiguresData((arr) => arr.filter((figure) => !figure.selected))
   }
 
-  const move = (event) => {
+  const move = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const movableElementCoords = getMovableElementCoords({
       clientX: event.clientX,
       clientY: event.clientY,
@@ -141,8 +142,8 @@ function App() {
         onMouseMove={handleMouseMove}
       >
         <MovedFigure
-          top={underMouse.top}
-          left={underMouse.left}
+          top={underMouseCoords?.top}
+          left={underMouseCoords?.left}
           figureType={movableElement?.name}
           isShow={showFigure}
         />

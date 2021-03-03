@@ -1,9 +1,9 @@
-//@ts-nocheck
-import React, { MutableRefObject, useRef } from 'react'
+import React, { ChangeEvent, MutableRefObject, useRef } from 'react'
+import { FigureType } from '../types'
 
 type PropsType = {
   deleteFiguresData: () => void
-  setFiguresData: () => void
+  setFiguresData: (array: Array<FigureType>) => void
 }
 
 export const ImportJSONButton: React.FC<PropsType> = ({ deleteFiguresData, setFiguresData }) => {
@@ -12,13 +12,17 @@ export const ImportJSONButton: React.FC<PropsType> = ({ deleteFiguresData, setFi
   const importJSON = (e: ChangeEvent<HTMLInputElement>) => {
     deleteFiguresData()
 
-    const file = e.target.files[0]
-    let reader = new FileReader()
-    reader.readAsText(file)
+    if (e.target.files?.length) {
+      const file = e.target.files[0]    
 
-    reader.onload = () => {
-      setFiguresData(JSON.parse(reader.result))
+      let reader = new FileReader()
+      reader.readAsText(file)
+  
+      reader.onload = () => {
+        setFiguresData(JSON.parse(reader.result as string))
+      }
     }
+
   }
 
   return (

@@ -1,13 +1,17 @@
-//@ts-nocheck
 import React, { useRef } from 'react'
+import { FigureType } from '../types'
 
-export const ExportJSONButton = ({ figuresData }) => {
-  const exportLink = useRef(null)
+type PropsType = {
+  figuresData: Array<FigureType>
+}
+
+export const ExportJSONButton: React.FC<PropsType> = ({ figuresData }) => {
+  const exportLink = useRef<HTMLAnchorElement>(null)
 
   const download = (text: BlobPart) => {
     let file = new Blob([text], { type: 'application/json' })
-    exportLink.current.href = URL.createObjectURL(file)
-    exportLink.current.download = 'dogecoin.json'
+    exportLink.current!.href = URL.createObjectURL(file)
+    exportLink.current!.download = 'dogecoin.json'
   }
 
   const exportJSON = () => {

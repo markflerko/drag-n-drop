@@ -29,7 +29,12 @@ export type CoordsType = {
 }
 
 export type DragStartDataType = {
-  shiftX: number,
-  shiftY: number,
+  shiftX: number
+  shiftY: number
   name: string
+}
+
+export type UnderMouseCoordsType = {
+  left: number
+  top: number
 }

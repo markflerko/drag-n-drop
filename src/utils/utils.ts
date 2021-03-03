@@ -77,7 +77,6 @@ export const getMovableElementCoords = ({
     x = x <= 0 ? 0 : x >= canvasCoords.width - movableElement.width ? canvasCoords.width - movableElement.width : x
 
     y = y <= 0 ? 0 : y >= canvasCoords.height - movableElement.height ? canvasCoords.height - movableElement.height : y
-
   } else if (movableElement.name === 'circle') {
     const r = movableElement.height / 2
     x = x <= r ? r : x >= canvasCoords.width - r ? canvasCoords.width - r : x
@@ -86,4 +85,57 @@ export const getMovableElementCoords = ({
   }
 
   return { x, y }
+}
+
+type selectType = {
+  upperFigure: FigureType
+  figuresData: Array<FigureType>
+}
+
+export const select = ({ upperFigure, figuresData }: selectType): Array<FigureType> => {
+  const figuresDataSelected = figuresData
+    .filter((figure) => figure.id !== upperFigure.id)
+    .map((item) => ({ ...item, selected: false }))
+
+  figuresDataSelected.push({ ...upperFigure, selected: true })
+  return figuresDataSelected
+}
+
+type calculateShiftsType = {
+  name: string
+  squareCoords: CoordsType
+  circleCoords: CoordsType
+  canvasCoords: CoordsType
+  clientX: number
+  clientY: number
+}
+
+type MovableElementShiftsType = {
+  shiftX: number
+  shiftY: number
+}
+
+export const calculateShifts = ({
+  name,
+  squareCoords,
+  circleCoords,
+  canvasCoords,
+  clientX,
+  clientY,
+}: calculateShiftsType): MovableElementShiftsType => {
+  let shiftX = 0
+  let shiftY = 0
+
+  if (name === 'square') {
+    shiftX = squareCoords.x - clientX - canvasCoords.x
+    shiftY = squareCoords.y - clientY - canvasCoords.y
+  } else if (name === 'circle') {
+    shiftX = circleCoords.x + circleCoords.width / 2 - clientX - canvasCoords.x
+    shiftY = circleCoords.y + circleCoords.height / 2 - clientY - canvasCoords.y
+  }
+
+  return {
+    shiftX,
+    shiftY,
+  }
 }

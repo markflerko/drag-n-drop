@@ -1,4 +1,4 @@
-import { CoordsType, FigureType, MovableElementType } from './../types'
+import { CoordsType, FigureType } from './../types'
 
 type IsInsideType = {
   element: FigureType
@@ -61,7 +61,7 @@ type GetMovableElementCoordsType = {
   clientX: number
   clientY: number
   canvasCoords: CoordsType
-  movableElement: MovableElementType
+  movableElement: FigureType
 }
 
 export const getMovableElementCoords = ({
@@ -87,12 +87,12 @@ export const getMovableElementCoords = ({
   return { x, y }
 }
 
-type selectType = {
+type SelectType = {
   upperFigure: FigureType
   figuresData: Array<FigureType>
 }
 
-export const select = ({ upperFigure, figuresData }: selectType): Array<FigureType> => {
+export const select = ({ upperFigure, figuresData }: SelectType): Array<FigureType> => {
   const figuresDataSelected = figuresData
     .filter((figure) => figure.id !== upperFigure.id)
     .map((item) => ({ ...item, selected: false }))
@@ -101,7 +101,7 @@ export const select = ({ upperFigure, figuresData }: selectType): Array<FigureTy
   return figuresDataSelected
 }
 
-type calculateShiftsType = {
+type CalculateShiftsType = {
   name: string
   squareCoords: CoordsType
   circleCoords: CoordsType
@@ -122,7 +122,7 @@ export const calculateShifts = ({
   canvasCoords,
   clientX,
   clientY,
-}: calculateShiftsType): MovableElementShiftsType => {
+}: CalculateShiftsType): MovableElementShiftsType => {
   let shiftX = 0
   let shiftY = 0
 
@@ -139,3 +139,15 @@ export const calculateShifts = ({
     shiftY,
   }
 }
+
+export const getNewFigure = (x: number, y: number, name: string): FigureType => ({
+  x,
+  y,
+  name,
+  width: 150,
+  height: 100,
+  id: Date.now(),
+  selected: true,
+  shiftX: 0,
+  shiftY: 0,
+})

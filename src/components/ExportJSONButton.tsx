@@ -1,11 +1,11 @@
 import React, { useRef } from 'react'
 import { FigureType } from '../types'
 
-type PropsType = {
+type ExportJSONButtonProps = {
   figuresData: Array<FigureType>
 }
 
-export const ExportJSONButton: React.FC<PropsType> = ({ figuresData }) => {
+export const ExportJSONButton = ({ figuresData }: ExportJSONButtonProps) => {
   const exportLink = useRef<HTMLAnchorElement>(null)
 
   const download = (text: BlobPart) => {

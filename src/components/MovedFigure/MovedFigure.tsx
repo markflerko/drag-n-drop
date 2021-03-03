@@ -1,14 +1,14 @@
 import React from 'react'
 import './MovedFigure.css'
 
-type PropsType = {
+type MovedFigureProps = {
   top: number,
   left: number,
   figureType: string,
   isShow: boolean
 }
 
-export const MovedFigure: React.FC<PropsType> = ({ top, left, figureType, isShow }) => {
+export const MovedFigure = ({ top, left, figureType, isShow }: MovedFigureProps) => {
   if (!isShow) return null
 
   return (

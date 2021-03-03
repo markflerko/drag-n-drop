@@ -1,7 +1,3 @@
-export type ContainerType = {
-  top: number
-}
-
 export type FigureType = {
   x: number
   y: number
@@ -10,9 +6,6 @@ export type FigureType = {
   height: number
   id: number
   selected: boolean
-}
-
-export type MovableElementType = FigureType & {
   shiftX: number
   shiftY: number
 }
@@ -26,15 +19,4 @@ export type CoordsType = {
   right: number
   x: number
   y: number
-}
-
-export type DragStartDataType = {
-  shiftX: number
-  shiftY: number
-  name: string
-}
-
-export type UnderMouseCoordsType = {
-  left: number
-  top: number
 }

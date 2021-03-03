@@ -1,12 +1,12 @@
 import React, { ChangeEvent, MutableRefObject, useRef } from 'react'
 import { FigureType } from '../types'
 
-type PropsType = {
+type ImportJSONButtonProps = {
   deleteFiguresData: () => void
   setFiguresData: (array: Array<FigureType>) => void
 }
 
-export const ImportJSONButton: React.FC<PropsType> = ({ deleteFiguresData, setFiguresData }) => {
+export const ImportJSONButton = ({ deleteFiguresData, setFiguresData }: ImportJSONButtonProps) => {
   const importInput: MutableRefObject<null> = useRef(null)
 
   const importJSON = (e: ChangeEvent<HTMLInputElement>) => {

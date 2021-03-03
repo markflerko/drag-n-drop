@@ -1,45 +1,43 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Provider } from 'react-redux'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import { Canvas } from './components/Canvas'
 import { ExportJSONButton } from './components/ExportJSONButton'
 import { ImportJSONButton } from './components/ImportJSONButton'
 import { MovedFigure } from './components/MovedFigure/MovedFigure'
-import { initialCoords, initialDragStartData, InitialMovableElement } from './initialStateValues/initialStateValues'
-import store from './redux/reduxStore'
-import { FigureType, MovableElementType, UnderMouseCoordsType } from './types'
-import { calculateShifts, getMovableElementCoords, getUpperFigure, isMouseInCanvas, select } from './utils/utils'
+import {
+  initialCoords,
+  initialDragStartData,
+  initialFigure,
+  initialUnderMouseCoords
+} from './initialStateValues/initialStateValues'
+import { FigureType } from './types'
+import { useDOMElementCoords } from './utils/useDOMElemetCoords'
+import {
+  calculateShifts,
+  getMovableElementCoords,
+  getNewFigure,
+  getUpperFigure,
+  isMouseInCanvas,
+  select
+} from './utils/utils'
 
-function App() {
-  const canvas = useRef<HTMLCanvasElement>(null)
-  const circle = useRef<HTMLDivElement>(null)
-  const square = useRef<HTMLDivElement>(null)
+type AppType = {
+  figures: Array<FigureType>
+}
 
-  const [circleCoords, setCircleCoords] = useState(initialCoords)
-  const [squareCoords, setSquareCoords] = useState(initialCoords)
-  const [canvasCoords, setcanvasCoords] = useState(initialCoords)
-
-  useLayoutEffect(() => {
-    setCircleCoords(circle.current!.getBoundingClientRect())
-    setSquareCoords(square.current!.getBoundingClientRect())
-    setcanvasCoords(canvas.current!.getBoundingClientRect())
-  }, [circle, canvas, square])
+export function App({ figures }: AppType) {
+  const [circleCoords, circle] = useDOMElementCoords<HTMLDivElement>(initialCoords)
+  const [squareCoords, square] = useDOMElementCoords<HTMLDivElement>(initialCoords)
+  const [canvasCoords, canvas] = useDOMElementCoords<HTMLCanvasElement>(initialCoords)
 
   const [dragStartData, setDragStartData] = useState(initialDragStartData)
-  const [figuresData, setFiguresData] = useState<Array<FigureType>>([])
+  const [figuresData, setFiguresData] = useState(figures)
 
-  const [movableElement, setMovableElement] = useState(InitialMovableElement)
+  const [movableElement, setMovableElement] = useState(initialFigure)
   const [mode, setMode] = useState('')
 
-  const [underMouseCoords, setUnderMouseCoords] = useState<UnderMouseCoordsType | null>(null)
+  const [underMouseCoords, setUnderMouseCoords] = useState(initialUnderMouseCoords)
   const [showFigure, setShowFigure] = useState(false)
-
-  useEffect(() => {
-    const data = localStorage.getItem('figures-canvas-position')
-    if (data) {
-      setFiguresData(JSON.parse(data))
-    }
-  }, [])
 
   useEffect(() => {
     localStorage.setItem('figures-canvas-position', JSON.stringify(figuresData))
@@ -47,9 +45,9 @@ function App() {
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     const name = (event.target as HTMLDivElement).id
-    const {clientX, clientY} = event;
+    const { clientX, clientY } = event
 
-    const { shiftX, shiftY } = calculateShifts({name, squareCoords, circleCoords, canvasCoords, clientX, clientY})
+    const { shiftX, shiftY } = calculateShifts({ name, squareCoords, circleCoords, canvasCoords, clientX, clientY })
 
     setDragStartData({ shiftX, shiftY, name })
   }
@@ -57,10 +55,10 @@ function App() {
   const handleDragEnd = (event: React.DragEvent<HTMLDivElement>) => {
     const x = event.clientX + dragStartData.shiftX
     const y = event.clientY + dragStartData.shiftY
-    const name = dragStartData.name
+    const { name } = dragStartData
 
-    const figuresDataUpdated = figuresData.map((item: FigureType) => ({ ...item, selected: false }))
-    const newFigure = { x, y, name, width: 150, height: 100, id: Date.now(), selected: true } as MovableElementType
+    const figuresDataUpdated = figuresData.map((item) => ({ ...item, selected: false }))
+    const newFigure = getNewFigure(x, y, name)
 
     setFiguresData([...figuresDataUpdated, newFigure])
   }
@@ -84,6 +82,7 @@ function App() {
     const { top, bottom, left, right } = canvasCoords
 
     if (mode === 'moveInsideCanvas') {
+      // set mode if only figure is moving
       if (isMouseInCanvas({ clientX, clientY, top, bottom, left, right })) {
         setMode('moveOutsideCanvas')
       }
@@ -91,11 +90,11 @@ function App() {
       setShowFigure(false)
       move(event)
     } else if (mode === 'moveOutsideCanvas') {
+      // set mode if only figure is moving
       if (!isMouseInCanvas({ clientX, clientY, top, bottom, left, right })) {
         setMode('moveInsideCanvas')
       }
 
-      setFiguresData((arr) => [...arr.slice(0, -1), { ...arr[arr.length - 1], hidden: true }])
       setShowFigure(true)
       move(event)
 
@@ -132,45 +131,41 @@ function App() {
   }
 
   return (
-    <Provider store={store}>
-      <div
-        className="App"
-        onMouseUp={handleMouseUp}
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-      >
-        <MovedFigure
-          top={underMouseCoords?.top}
-          left={underMouseCoords?.left}
-          figureType={movableElement?.name}
-          isShow={showFigure}
-        />
-        <div className="grid">
-          <div className="figuresTitle" id="figuresTitle">
-            figures
-          </div>
-          <div className="canvasTitle" id="canvasTitle">
-            canvas
-          </div>
-
-          <div className="figures" id="figures">
-            <div className="circle draggable" id="circle" draggable="true" ref={circle}></div>
-            <div className="square draggable" id="square" draggable="true" ref={square}></div>
-
-            <button className="button" onClick={removeFigure} type="button">
-              delete
-            </button>
-
-            <ExportJSONButton figuresData={figuresData} />
-            <ImportJSONButton deleteFiguresData={() => setFiguresData([])} setFiguresData={setFiguresData} />
-          </div>
-          <Canvas figuresData={figuresData} canvas={canvas} />
+    <div
+      className="App"
+      onMouseUp={handleMouseUp}
+      onDragEnd={handleDragEnd}
+      onDragStart={handleDragStart}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+    >
+      <MovedFigure
+        top={underMouseCoords.top}
+        left={underMouseCoords.left}
+        figureType={movableElement.name}
+        isShow={showFigure}
+      />
+      <div className="grid">
+        <div className="figuresTitle" id="figuresTitle">
+          figures
         </div>
+        <div className="canvasTitle" id="canvasTitle">
+          canvas
+        </div>
+
+        <div className="figures" id="figures">
+          <div className="circle draggable" id="circle" draggable="true" ref={circle}></div>
+          <div className="square draggable" id="square" draggable="true" ref={square}></div>
+
+          <button className="button" onClick={removeFigure} type="button">
+            delete
+          </button>
+
+          <ExportJSONButton figuresData={figuresData} />
+          <ImportJSONButton deleteFiguresData={() => setFiguresData([])} setFiguresData={setFiguresData} />
+        </div>
+        <Canvas figuresData={figuresData} canvas={canvas} />
       </div>
-    </Provider>
+    </div>
   )
 }
-
-export default App

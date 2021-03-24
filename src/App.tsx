@@ -57,6 +57,8 @@ export function App({ figures }: AppType) {
     const y = event.clientY + dragStartData.shiftY
     const { name } = dragStartData
 
+    //kekeke
+
     const figuresDataUpdated = figuresData.map((item) => ({ ...item, selected: false }))
     const newFigure = getNewFigure(x, y, name)
 
